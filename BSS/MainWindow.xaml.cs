@@ -28,13 +28,13 @@ namespace BSS {
                 });
 
                 Q = Matrix<double>.Build.DenseOfArray(new double[,] {
-                    { 0.15, 0, 0 },
-                    { 0, 1000, 0 },
-                    { 0, 0, 1000 }
+                    { 1, 0, 0 },
+                    { 0, 50, 0 },
+                    { 0, 0, 100 }
                 });
 
                 R = Matrix<double>.Build.DenseOfArray(new double[,] {
-                    { 1 }
+                    { 15 }
                 });
             }
 
@@ -48,7 +48,7 @@ namespace BSS {
             InitializeComponent();
 
             chart.Title = "Distance";
-            chart.RefreshDelay = 60;
+            chart.RefreshDelay = 200;
             chart.AddSeries("Distance [mm]", "Distance", true);
             chart.AddSeries("Filtered distance [mm]", "Filtered distance [mm]", true);
 
@@ -98,12 +98,20 @@ namespace BSS {
                 startBtn.IsEnabled = false;
                 stopBtn.IsEnabled = false;
             };
-            serialPort.DataReceived += (s, e) => {
-                //TODO: pobranie danych
-                double rawData = 5;
-                double filteredData = filter.Compute(rawData)[0];
 
-                chart.Update(new double[] { rawData, filteredData });
+            serialPort.DataReceived += (s, e) => {
+                try {
+                    double rawData = Convert.ToDouble(serialPort.ReadLine());
+
+                    if (rawData > 200) {
+                        return;
+                    }
+
+                    double filteredData = filter.Compute(rawData)[0];
+
+                    chart.Update(new double[] { rawData, filteredData });
+                } catch (Exception) {
+                }
             };
         }
 

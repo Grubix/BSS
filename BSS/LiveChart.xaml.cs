@@ -73,6 +73,9 @@ namespace PingPong {
             chart.Axes[0].AbsoluteMaximum = MaxSamples;
             chart.Axes[0].MinimumRange = 10;
 
+            //chart.Axes[0].IsZoomEnabled = true;
+            //chart.Axes[0].IsPanEnabled = true;
+
             //chart.Axes[0].Title = "Ball position X [mm]";
 
             //Series series1 = new LineSeries {
