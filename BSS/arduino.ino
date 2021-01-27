@@ -2,6 +2,8 @@
 
 Servo servo;  
 int angle = 0;
+bool right = true;
+bool start = false;
  
 void setup() {
     pinMode(2, OUTPUT); // HC-SR04 trig
@@ -13,41 +15,38 @@ void setup() {
 } 
  
 void loop() {
-    if(Serial.available() > 0) {
-        //TODO: komendy
-        servo.write(Serial.readString().toFloat()); 
-    }
+    if(Serial.available() >= 4) {
+        String data = Serial.readString();
 
-    if (digitalRead(8) == HIGH) {
-        for(int angle = 0; angle <= 180; angle++) {                    
-            digitalWrite(2, LOW);
-            delayMicroseconds(2);
-        
-            digitalWrite(2, HIGH);
-            delayMicroseconds(10);
-            digitalWrite(2, LOW);
-        
-            long echoTime = pulseIn(3, HIGH);
-            float distance = echoTime / 58.0;    
-
-            servo.write(angle);
-            Serial.println(distance);                
-            delay(50);                   
+        if (data == "s000") {
+            start = false;
+        } else if (data == "s001") {
+            start = true;
+        } else {
+            servo.write(data.toFloat());
         }
-        for(int angle = 180; angle >= 0; angle--) {                    
-            digitalWrite(2, LOW);
-            delayMicroseconds(2);
-        
-            digitalWrite(2, HIGH);
-            delayMicroseconds(10);
-            digitalWrite(2, LOW);
-        
-            long echoTime = pulseIn(3, HIGH);
-            float distance = echoTime / 58.0; 
-
-            servo.write(angle);
-            Serial.println(distance);                
-            delay(50);                   
-        } 
     }
+
+    if (!start || digitalRead(8) == LOW) {
+        delay(50);
+        return;
+    }
+
+    float distance = measureDistance();
+    Serial.println(distance);                
+    delay(50);    
+}
+
+float measureDistance() {
+    digitalWrite(2, LOW);
+    delayMicroseconds(2);
+        
+    digitalWrite(2, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(2, LOW);
+        
+    long echoTime = pulseIn(3, HIGH);
+    float distance = echoTime / 58.0;
+
+    return distance;
 }

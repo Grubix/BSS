@@ -22,13 +22,15 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <ComboBox Grid.Row="0" Grid.Column="0" x:Name="portSelect" Margin="0,0,2.5,0"/>
                 <Button IsEnabled="false" Grid.Row="0" Grid.Column="1" x:Name="disconnectBtn" Content="Disconnect" Margin="2.5,0,0,0"/>
                 <Button IsEnabled="false" Grid.Row="1" Grid.Column="0" x:Name="startBtn" Content="Start" Margin="0,5,2.5,0"/>
                 <Button IsEnabled="false" Grid.Row="1" Grid.Column="1" x:Name="stopBtn" Content="Stop" Margin="2.5,5,0,0"/>
-                <Button IsEnabled="false" Grid.Row="2" Grid.Column="0" Content="Left" Margin="0,5,2.5,0"/>
-                <Button IsEnabled="false" Grid.Row="2" Grid.Column="1" Content="Right" Margin="2.5,5,0,0"/>
+                <TextBox IsEnabled="false" Grid.Row="2" Grid.Column="0" Margin="0,5,2.5,0" x:Name="angleText"/>
+                <Button IsEnabled="false" Grid.Row="2" Grid.Column="1" Content="Set angle" x:Name="setAngleBtn" Margin="2.5,5,0,0"/>
+                <Button IsEnabled="false" Grid.Row="3" Grid.ColumnSpan="2" Content="Freeze chart" x:Name="freezeBtn" Margin="0,5,0,0"/>
             </Grid>
         </StackPanel>
         <PingPong:LiveChart Grid.Column="1" x:Name="chart"/>

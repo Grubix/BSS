@@ -44,6 +44,8 @@ namespace BSS {
 
         private readonly SerialPort serialPort;
 
+        private bool isChartFrozen = false;
+
         public MainWindow() {
             InitializeComponent();
 
@@ -78,6 +80,12 @@ namespace BSS {
                         serialPort.DiscardInBuffer();
                         portSelect.IsEnabled = false;
                         disconnectBtn.IsEnabled = true;
+
+                        startBtn.IsEnabled = true;
+                        stopBtn.IsEnabled = true;
+                        angleText.IsEnabled = true;
+                        setAngleBtn.IsEnabled = true;
+                        freezeBtn.IsEnabled = true;
                     } catch (Exception ex) {
                         Console.WriteLine($"Error: {ex.Message}");
                     }
@@ -86,10 +94,36 @@ namespace BSS {
 
             disconnectBtn.Click += (s, e) => serialPort.Close();
             startBtn.Click += (s, e) => {
-                //TODO:
+                serialPort.Write("s001");
             };
             stopBtn.Click += (s, e) => {
-                //TODO:
+                serialPort.Write("s000");
+            };
+
+            setAngleBtn.Click += (s, e) => {
+                try {
+                    int angle = int.Parse(angleText.Text);
+
+                    angle = Math.Max(0, angle);
+                    angle = Math.Min(angle, 180);
+
+                    angleText.Text = angle.ToString();
+                    serialPort.Write((angle + ".0").PadRight(4, '0'));
+                } catch (Exception ex) {
+                    Console.WriteLine(ex);
+                }
+            };
+
+            freezeBtn.Click += (s, e) => {
+                if (isChartFrozen) {
+                    chart.Unfreeze();
+                    isChartFrozen = false;
+                    freezeBtn.Content = "Freeze chart";
+                } else {
+                    chart.Freeze();
+                    isChartFrozen = true;
+                    freezeBtn.Content = "Unfreeze chart";
+                }
             };
 
             serialPort.Disposed += (s, e) => {
@@ -97,20 +131,19 @@ namespace BSS {
                 disconnectBtn.IsEnabled = false;
                 startBtn.IsEnabled = false;
                 stopBtn.IsEnabled = false;
+                angleText.IsEnabled = false;
+                setAngleBtn.IsEnabled = false;
+                freezeBtn.IsEnabled = false;
             };
 
             serialPort.DataReceived += (s, e) => {
                 try {
                     double rawData = Convert.ToDouble(serialPort.ReadLine());
-
-                    if (rawData > 200) {
-                        return;
-                    }
-
                     double filteredData = filter.Compute(rawData)[0];
 
                     chart.Update(new double[] { rawData, filteredData });
-                } catch (Exception) {
+                } catch (Exception ex) {
+                    Console.WriteLine(ex);
                 }
             };
         }
